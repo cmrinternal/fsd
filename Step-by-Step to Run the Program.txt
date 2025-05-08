@@ -1,0 +1,220 @@
+Step-by-Step to Run the Program
+________________________________________
+1. Install Node.js (if you don't have it)
+•	Download and install Node.js from here:
+👉 https://nodejs.org/
+•	After installing, check versions:
+node -v
+npm -v
+If you see versions, Node is installed ✅
+________________________________________
+2. Install Angular CLI
+CLI = Command Line Interface to easily create and run Angular projects.
+In your terminal (CMD or PowerShell or terminal in VSCode):
+npm install -g @angular/cli
+Check Angular version:
+ng version
+✅ If you see Angular CLI version, you're good.
+________________________________________
+3. Create a New Angular Project
+ng new my-angular-app
+It will ask:
+•	Would you like to add Angular routing? → No (for now)
+•	Which stylesheet format? → CSS
+It will create a folder my-angular-app/ with all files.
+________________________________________
+4. Move into Your Project Folder
+cd my-angular-app
+________________________________________
+5. Create a Service
+Run:
+ng generate service my-data
+This command will create:
+•	src/app/my-data.service.ts
+•	and a test file (you can ignore test files for now)
+________________________________________
+6. Create/Edit Your Component
+You already have a default AppComponent created inside:
+•	src/app/app.component.ts
+•	src/app/app.component.html
+We'll update these:
+👉 First, update app.module.ts
+Open src/app/app.module.ts and add:
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  imports: [
+    HttpClientModule
+  ],
+})
+(Without this, HTTP won't work!)
+________________________________________
+👉 Now, modify app.component.ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';   
+// <-- import CommonModule
+
+@Component({
+  selector: 'app-root',
+  standalone: true,               // <-- important in Angular 17+
+  imports: [CommonModule],         // <-- import CommonModule here
+  template: `
+    <div *ngIf="data">
+      <pre>{{ data | json }}</pre>
+    </div>
+  `
+})
+export class AppComponent {
+  data = { message: "Hello World" };
+}________________________________________
+👉 Then modify my-data.service.ts
+Open src/app/my-data.service.ts and write:
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+ 
+@Injectable({
+  providedIn: 'root'
+})
+export class MyDataService {
+
+  constructor(private http: HttpClient) {}
+
+  getData(): Observable<any> {
+    return this.http.get('https://jsonplaceholder.typicode.com/posts');
+    // I used a public free API here.
+  }
+}
+________________________________________
+✅ Now your basic setup is ready!
+________________________________________
+7. Start the Angular App
+Run:
+ng serve
+or
+ng serve --open
+(The --open flag automatically opens the browser.)
+________________________________________
+Good question — let's break it down simply:
+When you hear "free fake users API", it usually means:
+•	It's an API (Application Programming Interface) — meaning a service you can call from your app or code to get some data.
+•	It gives you fake (dummy) user data — like names, emails, profile pictures, addresses — not real people.
+•	It's free — you don't have to pay for it.
+•	Developers use it for testing or practice, especially when they don't have real data yet.
+JSONPlaceholder → Gives fake posts, comments, users, etc.
+Alright, so — when you go to https://jsonplaceholder.typicode.com/users,
+you’re looking at a free, fake API endpoint that gives you a list of dummy users in JSON format.
+Here's what’s happening exactly:
+•	jsonplaceholder.typicode.com is a website that provides fake APIs for practice — no real database, no real users — just made-up data for developers to use.
+•	/users is the specific route (or endpoint) that gives you fake user data.
+Full Steps to Execute the Program
+✅ Step 1: Make sure you have Node.js and Angular CLI installed
+•	Check Node.js:
+node -v
+If not installed, download it from nodejs.org.
+•	Check Angular CLI:
+ng version
+If you don't have it, install Angular CLI globally:
+npm install -g @angular/cli
+________________________________________
+✅ Step 2: Create a new Angular Project (if you haven't)
+In your terminal or command prompt:
+ng new my-form-app
+cd my-form-app
+When it asks:
+•	Would you like to add Angular routing? → No (unless you want)
+•	Which stylesheet format? → CSS
+________________________________________
+✅ Step 3: Generate a Service (for submitting data)
+Inside the project folder:
+ng generate service data
+It will create src/app/data.service.ts.
+You write this inside it:
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DataService {
+
+  private apiUrl = 'https://your-api-endpoint.com/data'; // <-- PUT YOUR API URL
+
+  constructor(private http: HttpClient) { }
+
+  submitData(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data);
+  }
+}
+✅ Don't forget to replace apiUrl with your real backend URL!
+(If you don't have a backend yet, we can use a free mock server like https://webhook.site/).
+________________________________________
+✅ Step 4: Write your Component Code
+In src/app/app.component.ts:
+import { Component } from '@angular/core';
+import { DataService } from './data.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html'
+})
+export class AppComponent {
+  userData = {
+    name: '',
+    email: ''
+  };
+
+  constructor(private dataService: DataService) {}
+
+  onSubmit() {
+    this.dataService.submitData(this.userData).subscribe(
+      (response) => {
+        console.log('Data submitted successfully', response);
+      },
+      (error) => {
+        console.error('Error submitting data', error);
+      }
+    );
+  }
+}
+________________________________________
+✅ Step 5: Write your Form HTML
+In src/app/app.component.html:
+<form (ngSubmit)="onSubmit()">
+  <input type="text" [(ngModel)]="userData.name" name="name" placeholder="Name" required>
+  <input type="email" [(ngModel)]="userData.email" name="email" placeholder="Email" required>
+  <button type="submit">Submit</button>
+</form>
+________________________________________
+✅ Step 6: Make sure your app.module.ts has FormsModule and HttpClientModule
+In src/app/app.module.ts:
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule, FormsModule, HttpClientModule],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+________________________________________
+✅ Step 7: Run the Application
+In the terminal inside your project:
+ng serve
+✅ After it's built successfully, open your browser and go to:
+http://localhost:4200/
+You will see your form! 🎉
+•	Fill in Name and Email
+•	Click Submit
+•	Check the browser console (F12 > Console tab)
+o	If successful → you’ll see the success message.
+o	If error → you’ll see an error message.
+________________________________________
+https://webhook.site/ → Free tool to instantly receive POST requests and view the data
+
