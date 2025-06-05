@@ -1,7 +1,7 @@
 python --version
 py -m pip install --user virtualenv
 py -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\activate
 python -m pip install django
 python -m django --version
 django-admin startproject first
